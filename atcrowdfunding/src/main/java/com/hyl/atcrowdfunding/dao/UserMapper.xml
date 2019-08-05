@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyl.atcrowdfunding.dao.UserMapper">
+
+	<resultMap id="BaseResultMap" type="com.hyl.atcrowdfunding.model.User">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="loginacct" property="loginacct" jdbcType="VARCHAR" />
+		<result column="userpswd" property="userpswd" jdbcType="CHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="createtime" property="createtime" jdbcType="CHAR" />
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_user
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.hyl.atcrowdfunding.model.User" useGeneratedKeys="true" keyProperty="id">
+		insert into t_user (id,
+		loginacct, userpswd,
+		username, email, createtime
+		)
+		values
+		(#{id,jdbcType=INTEGER}, #{loginacct,jdbcType=VARCHAR},
+		#{userpswd,jdbcType=CHAR},
+		#{username,jdbcType=VARCHAR},
+		#{email,jdbcType=VARCHAR}, #{createtime,jdbcType=CHAR}
+		)
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.hyl.atcrowdfunding.model.User">
+		update t_user
+		set
+		loginacct = #{loginacct,jdbcType=VARCHAR},
+		username = #{username,jdbcType=VARCHAR},
+		email = #{email,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select id, loginacct, userpswd, username, email,
+		createtime
+		from t_user
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+		select id, loginacct, userpswd,
+		username, email, createtime
+		from t_user
+	</select>
+
+	<select id="queryUserlogin" parameterType="map" resultMap="BaseResultMap">
+		select id, loginacct, userpswd,
+		username, email, createtime
+		from t_user
+		where loginacct=#{loginacct} and userpswd=#{userpswd}
+	</select>
+
+	<select id="queryList"   resultMap="BaseResultMap">
+		select id, loginacct, userpswd,
+		username, email, createtime
+		from t_user
+		<where>
+			<if test="queryText!=null">
+				loginacct like concat("%",#{queryText},"%")
+			</if>
+		</where>
+		order by createtime desc
+		limit #{startIndex},#{pagesize}
+
+	</select>
+
+	<select id="queryCount"  resultType="int">
+		select count(*)
+		from t_user
+		<where>
+			<if test="queryText!=null">
+				loginacct like concat("%",#{queryText},"%")
+			</if>
+		</where>
+	</select>
+
+
+	<select id="queryAllRole"  resultType="role">
+		select *
+		from t_role
+	</select>
+
+
+	<select id="queryRoleByUserId" parameterType="int"  resultType="int">
+		select roleid
+		from t_user_role
+		where userid=#{id}
+		
+	</select>
+
+
+	<insert id="saveUserRoleRelationShip">
+	 	<foreach collection="data.ids" item="roleid" separator=";">
+			insert into t_user_role(userid,roleid)
+			values(#{userid},#{roleid})
+		</foreach>
+	</insert>
+
+
+	<delete id="deleteUserRoleRelationShip">
+		delete from t_user_role
+		where userid = #{userid}
+		and roleid in
+		<foreach collection="data.ids" item="roleid" open="(" separator="," close=")">
+			#{roleid}
+		</foreach>
+	</delete>
+	
+
+	<select id="queryPermissionByUserId"  parameterType="int" resultType="permission">
+		select t_permission.*
+		from t_permission
+		inner join t_role_permission on t_permission.id = t_role_permission.permissionid
+		inner join t_role on t_role_permission.roleid = t_role.id
+		inner join t_user_role on t_role.id = t_user_role.roleid
+		inner join t_user on t_user_role.userid = t_user.id
+		where t_user.id = #{userid}
+	</select>
+</mapper>
