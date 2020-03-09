@@ -58,8 +58,8 @@
         <a class="btn btn-lg btn-success btn-block" onclick="dologin()" > 登录</a>
     </form>
 </div>
-<script src="${APP_PATH }/jquery/jquery-2.1.1.min.js"></script>
-<script src="${APP_PATH }/bootstrap/js/bootstrap.min.js"></script>
+<script src="${APP_PATH}/jquery/jquery-2.1.1.min.js"></script>
+<script src="${APP_PATH}/bootstrap/js/bootstrap.min.js"></script>
 <script src="${APP_PATH}/jquery/layer/layer.js"></script>
 <script>
 

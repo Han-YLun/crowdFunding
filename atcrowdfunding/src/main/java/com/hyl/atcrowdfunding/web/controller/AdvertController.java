@@ -37,8 +37,4 @@ public class AdvertController {
         model.addAttribute("advert",advert); */
         return "advert/edit";
     }
-
-    
-
-    
 }
